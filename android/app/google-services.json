@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "238716424724",
+    "project_id": "hackaton-poc-4a333",
+    "storage_bucket": "hackaton-poc-4a333.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238716424724:android:3ad9796a029c480e06cd01",
+        "android_client_info": {
+          "package_name": "com.example.flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "238716424724-h14ilkslou8hoitaui4dq9chrt9l2eed.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIO5uzVQ73-7YYWGo0qKMiM_Zm96B5ECk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "238716424724-h14ilkslou8hoitaui4dq9chrt9l2eed.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
