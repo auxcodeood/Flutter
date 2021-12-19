@@ -137,6 +137,8 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () async {
                           // await addUser(emailController.text,
                           //     passwordController.text);
+                          // await signin(
+                          //     emailController.text, passwordController.text);
                           final user =
                               await getUserByEmail(emailController.text);
                           if (user['password'] == passwordController.text) {
@@ -160,9 +162,8 @@ class _LoginPageState extends State<LoginPage> {
                                     ],
                                   );
                                 });
-                          }
-                          else
-                          print("wrong password");
+                          } else
+                            print("wrong password");
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
