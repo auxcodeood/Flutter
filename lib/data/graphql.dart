@@ -1,41 +1,47 @@
-// import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
+GraphQLClient? client;
 
-// late Db db;
-// late DbCollection UserModel;
+String locale = "en";
 
+Future<void> initGraphQlClient() async {
+  await initHiveForFlutter();
+  final HttpLink httpLink = HttpLink(
+    'https://graphql.datocms.com/',
+  );
+  final AuthLink authLink = AuthLink(
+    getToken: () => 'Bearer 1f6a3be4a08dbaa3491b7fa0e24f52',
+    // OR
+    // getToken: () => 'Bearer <YOUR_PERSONAL_ACCESS_TOKEN>',
+  );
+  final Link link = authLink.concat(httpLink);
 
-// void connectToGraphQL() async {
-//   await initHiveForFlutter();
-//   final HttpLink httpLink = HttpLink(
-//     'https://testing-9787.admin.datocms.com/',
-//   );
-//   final AuthLink authLink = AuthLink(
-//     getToken: () async => 'Bearer 65ac1ebdd4570a1667873978c2b2b5',
-//     // OR
-//     // getToken: () => 'Bearer <YOUR_PERSONAL_ACCESS_TOKEN>',
-//   );
-//    final Link link = authLink.concat(httpLink);
+  client = GraphQLClient(
+    link: link,
+    // The default store is the InMemoryStore, which does NOT persist to disk
+    cache: GraphQLCache(store: HiveStore()),
+  );
+}
 
-//    ValueNotifier<GraphQLClient> client = ValueNotifier(
-//     GraphQLClient(
-//       link: link,
-//       // The default store is the InMemoryStore, which does NOT persist to disk
-//       store: GraphQLCache(store: HiveStore()),
-//     ),
-//   );
-// }
+String allHomes = """
+      query allHomesEN {
+        home(locale: $locale) {
+          anotherTitle
+          homeTitle
+          loginButton
+        }
+      }
+""";
 
-// Future<dynamic> findByEmail(String email) async {
-//   var user = await UserModel.findOne({"email": email});
-//   print(
-//       "===============================================USER=======================================");
-//   print(user);
-//   return user;
-// }
+String allHomesNew = """
+      query allHomesEN {
+        home(locale: $locale) {
+          loginButton
+        }
+      }
+""";
 
-// Future<void> insertByEmail(String email, dynamic data) async {
-//   var result = await UserModel.insertOne(
-//       {"email": data['email'], "password": data['password']});
-//   print(result);
-// }
+Future<void> executeQuery() async {
+  final results = await client!.query(QueryOptions(document: gql(allHomes)));
+  print(results);
+}
