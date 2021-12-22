@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'data/firebase.dart';
+import 'data/graphql.dart';
 import 'login_page.dart';
 //import 'mongo.dart';
 
 Future<void> main() async {
-  firebaseInit();
+  await initGraphQlClient();
+  await firebaseInit();
   //connectToDb();
-  runApp(
-    MaterialApp(
-      theme: ThemeData.dark(),
-      home: LoginPage(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: LoginPage(),
-    );
+    return GraphQLProvider(
+        client: ValueNotifier(client!),
+        child: MaterialApp(
+          theme: ThemeData.dark(),
+          home: const LoginPage(),
+        ));
   }
 }
