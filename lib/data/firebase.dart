@@ -36,6 +36,22 @@ Future<dynamic> getUserByEmail(String email) async {
   return user;
 }
 
+Future<dynamic> getUser() async {
+  final user = await users.get().then((snapshot) => snapshot.docs[0]);
+  return user;
+}
+
+Future<void> updateByEmail(String email, dynamic user) async {
+  try {
+    return users.doc((await getUserByEmail(email)).id).update(user);
+  } on FirebaseException catch (e) {
+    print('Something went wrong while updating user with email ' +
+        email +
+        ' err - ' +
+        e.message!);
+  }
+}
+
 Future<void> register(String email, String password) async {
   try {
     UserCredential userCredential = await FirebaseAuth.instance
