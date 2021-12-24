@@ -2,8 +2,6 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 
 GraphQLClient? client;
 
-String locale = "en";
-
 Future<void> initGraphQlClient() async {
   await initHiveForFlutter();
   final HttpLink httpLink = HttpLink(
@@ -11,8 +9,6 @@ Future<void> initGraphQlClient() async {
   );
   final AuthLink authLink = AuthLink(
     getToken: () => 'Bearer 1f6a3be4a08dbaa3491b7fa0e24f52',
-    // OR
-    // getToken: () => 'Bearer <YOUR_PERSONAL_ACCESS_TOKEN>',
   );
   final Link link = authLink.concat(httpLink);
 
@@ -23,25 +19,35 @@ Future<void> initGraphQlClient() async {
   );
 }
 
-String allHomes = """
-      query allHomesEN {
-        home(locale: $locale) {
-          anotherTitle
-          homeTitle
-          loginButton
-        }
-      }
+// String allHomes = """
+//       query allHomesEN {
+//         home(locale: $locale) {
+//           anotherTitle
+//           homeTitle
+//           loginButton
+//         }
+//       }
+// """;
+
+// String allHomesNew = """
+//       query querryName {
+//   home(locale: $locale) {
+//     loginButton
+//   }
+// }
+// """;
+
+Future<QueryResult> executeQuery(String locale) async {
+  String allHomesNew = """
+      query querryName {
+  home(locale: $locale) {
+    loginButton
+    selfieButton
+  }
+}
 """;
 
-String allHomesNew = """
-      query allHomesEN {
-        home(locale: $locale) {
-          loginButton
-        }
-      }
-""";
-
-Future<void> executeQuery() async {
-  final results = await client!.query(QueryOptions(document: gql(allHomes)));
-  print(results);
+  final results = await client!.query(QueryOptions(document: gql(allHomesNew)));
+  print(results.data!["home"]);
+  return results;
 }
