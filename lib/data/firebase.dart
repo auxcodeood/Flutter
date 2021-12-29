@@ -16,7 +16,10 @@ Future<void> firebaseInit() async {
 }
 
 CollectionReference users = FirebaseFirestore.instance.collection('users');
-CollectionReference products = FirebaseFirestore.instance.collection('products');
+CollectionReference products =
+    FirebaseFirestore.instance.collection('products');
+CollectionReference settings =
+    FirebaseFirestore.instance.collection('settings');
 
 Future<void> addUser(String email, String password) {
   return users
@@ -54,7 +57,8 @@ Future<void> updateByEmail(String email, dynamic user) async {
 }
 
 Future<dynamic> getProducts() async {
-  final allProducts =  (await products.get()).docs.map((doc) => doc.data()).toList();
+  final allProducts =
+      (await products.get()).docs.map((doc) => doc.data()).toList();
   return allProducts;
 }
 
@@ -84,5 +88,18 @@ Future<void> signin(String email, String password) async {
     } else if (e.code == 'wrong-password') {
       print('Wrong password provided for that user.');
     }
+  }
+}
+
+Future<dynamic>? getSettings() async {
+  try {
+    final settingsData =
+        await settings.get().then((snapshot) => snapshot.docs[0]);
+    return settingsData;
+  } on Exception catch (e) {
+    print(
+        'Something went wrong while fetching settings from firestore, err - ' +
+            e.toString());
+    return null;
   }
 }
