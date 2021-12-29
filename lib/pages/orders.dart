@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -15,58 +16,128 @@ class OrderPage extends StatefulWidget {
   _OrderPageState createState() => _OrderPageState();
 }
 
-var translations;
-var products;
-
 class _OrderPageState extends State<OrderPage> {
+  dynamic translations;
+  dynamic products;
+
+  List<QueryDocumentSnapshot<Object?>>? orders;
+
   late Future<QueryResult> _translations;
   late Future<dynamic> _products;
+  late Future<dynamic> _orders;
 
   @override
   void initState() {
     super.initState();
     _translations = productsQuery(Locale.EN);
     _products = getProducts();
+    _orders = getOrders();
   }
 
-  Widget _buildListView() {
-    return ListView.separated(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      padding: const EdgeInsets.all(8),
-      itemCount: products.length,
-      itemBuilder: (BuildContext context, int index) {
-        return Container(
-          height: 80,
-          color: LIME_GREEN,
-          child: Center(
-            child: ListTile(
-              leading: const Icon(Icons.assessment_outlined, color: DARK_GREEN),
-              title: Text(
-                translations.data!.data != null
-                    ? translations.data!.data!['product']
-                            ['${products[index]['isin'].toLowerCase()}Name'] ??
-                        "missing"
-                    : "missing translation",
-                style: const TextStyle(
-                    color: DARK_GREEN, fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                '${translations.data!.data!['product']['${products[index]['isin'].toLowerCase()}Price'] ?? "price"} ${translations.data!.data!['product']['${products[index]['isin'].toLowerCase()}Currency'] ?? "currency"}',
-                style: const TextStyle(color: DARK_GREEN),
-              ),
-              onTap: () =>
-                  {print('tapped ${products[index]['isin'].toLowerCase()}')},
-              onLongPress: () =>
-                  {print('pressed ${products[index]['isin'].toLowerCase()}')},
-            ),
-          ),
-        );
+  Widget _buildTile(int index) {
+    return ListTile(
+      leading: const Icon(Icons.assessment_outlined, color: DARK_GREEN),
+      title: Text(
+        translations.data!.data != null
+            ? translations.data!.data!['product']
+                    ['${products[index]['isin'].toLowerCase()}Name'] ??
+                "missing"
+            : "missing translation",
+        style: const TextStyle(color: DARK_GREEN, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(
+        '${translations.data!.data!['product']['${products[index]['isin'].toLowerCase()}Price'] ?? "price"} ${translations.data!.data!['product']['${products[index]['isin'].toLowerCase()}Currency'] ?? "currency"}',
+        style: const TextStyle(color: DARK_GREEN),
+      ),
+      trailing: orders!.any((x) => x['isin']
+              .toLowerCase()
+              .contains(products[index]['isin'].toLowerCase()))
+          ? const Icon(Icons.shopping_cart, color: DARK_GREEN)
+          : const Icon(Icons.shopping_cart_outlined, color: DARK_GREEN),
+      onTap: () {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Alert'),
+                content: const Text("Are you sure you want to make an order?"),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Yes'),
+                    onPressed: () async {
+                      if (!orders!.any((x) => x['isin']
+                          .toLowerCase()
+                          .contains(products[index]['isin'].toLowerCase()))) {
+                        await insertOrders(products[index]['isin']);
+                      }
+                      setState(() {
+                        _orders = getOrders();
+                      });
+                      print(
+                          'you agreed on ${products[index]['isin'].toLowerCase()}');
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('No'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
       },
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
+      onLongPress: () async {
+        await deleteOrder(products[index]['isin']);
+        setState(() {
+          _orders = getOrders();
+        });
+        print('pressed ${products[index]['isin'].toLowerCase()}');
+      },
     );
   }
 
+  Widget _buildListView() {
+    return FutureBuilder<dynamic>(
+        future: _products,
+        builder: (context, snapshot) {
+          products = snapshot.data;
+          if (products != null &&
+              translations != null &&
+              translations.data != null) {
+            return FutureBuilder<dynamic>(
+                future: _orders,
+                builder: (context, snapshot) {
+                  orders = snapshot.data;
+                  if (orders != null) {
+                    return ListView.separated(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all(8),
+                      itemCount: products.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          height: 80,
+                          color: LIME_GREEN,
+                          child: Center(
+                            child: _buildTile(index),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Divider(),
+                    );
+                  } else {
+                    return const Text("Loading...");
+                  }
+                });
+          } else {
+            return const Text("Loading...");
+          }
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +148,6 @@ class _OrderPageState extends State<OrderPage> {
       backgroundColor: DARK_GREEN,
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 50),
-          ),
           //LanguageToggle(),
           FutureBuilder<QueryResult>(
               future: _translations,
@@ -89,41 +157,38 @@ class _OrderPageState extends State<OrderPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     constraints: const BoxConstraints.expand(),
-                    decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(35),
-                            topRight: Radius.circular(35))),
                     child: Column(
                       children: [
-                        ToggleSwitch(
-                          initialLabelIndex: 0,
-                          totalSwitches: 2,
-                          labels: ['EN', 'BG'],
-                          onToggle: (index) async {
-                            String locale;
-                            if (index == 0) {
-                              locale = Locale.EN;
-                            } else {
-                              locale = Locale.BG;
-                            }
-                            setState(() {
-                              _translations = productsQuery(locale);
-                            });
-                          },
-                        ),
-                        FutureBuilder<dynamic>(
-                            future: _products,
-                            builder: (context, snapshot) {
-                              products = snapshot.data;
-
-                              if (products != null &&
-                                  translations != null &&
-                                  translations.data != null) {
-                                return _buildListView();
+                        Container(
+                          margin: const EdgeInsets.only(top: 32),
+                          alignment: Alignment.topLeft,
+                          child: ToggleSwitch(
+                            initialLabelIndex: 0,
+                            totalSwitches: 2,
+                            labels: const ['EN', 'BG'],
+                            onToggle: (index) async {
+                              String locale;
+                              if (index == 0) {
+                                locale = Locale.EN;
                               } else {
-                                return const Text("Loading...");
+                                locale = Locale.BG;
                               }
-                            })
+                              setState(() {
+                                _translations = productsQuery(locale);
+                              });
+                            },
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 50),
+                        ),
+                        const Text(
+                          'Products',
+                          style: TextStyle(
+                              fontSize: 32, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildListView()
                       ],
                     ),
                   ),

@@ -3,6 +3,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+class Order {
+  final String isin;
+  Order({required this.isin});
+
+  Order.fromJson(Map<String, Object?> json)
+      : this(
+          isin: json['isin']! as String,
+        );
+
+  Map<String, Object?> toJson() {
+    return {
+      'isin': isin,
+    };
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is Order && other.runtimeType == runtimeType && other.isin == isin;
+
+  @override
+  int get hashCode => isin.hashCode;
+}
+
 Future<void> firebaseInit() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -16,6 +39,11 @@ Future<void> firebaseInit() async {
 }
 
 CollectionReference users = FirebaseFirestore.instance.collection('users');
+CollectionReference orders =
+    FirebaseFirestore.instance.collection('orders').withConverter<Order>(
+          fromFirestore: (snapshot, _) => Order.fromJson(snapshot.data()!),
+          toFirestore: (order, _) => order.toJson(),
+        );
 CollectionReference products =
     FirebaseFirestore.instance.collection('products');
 CollectionReference settings =
@@ -60,6 +88,27 @@ Future<dynamic> getProducts() async {
   final allProducts =
       (await products.get()).docs.map((doc) => doc.data()).toList();
   return allProducts;
+}
+
+Future<List<QueryDocumentSnapshot<Object?>>> getOrders() async {
+  List<QueryDocumentSnapshot<Object?>> tempOrders =
+      (await orders.get().then((snapshot) => snapshot.docs));
+  final allOrders = (await orders.get()).docs.map((doc) => doc.data()).toList();
+  return tempOrders;
+}
+
+Future<void> insertOrders(String isin) async {
+  orders.add(Order(isin: isin)).then((value) => print("Order Added"));
+}
+
+Future<void> deleteOrder(String isin) async {
+  await orders.where("isin", isEqualTo: isin).get().then((value) {
+    for (var element in value.docs) {
+      orders.doc(element.id).delete().then((value) {
+        print("Success!");
+      });
+    }
+  });
 }
 
 Future<void> register(String email, String password) async {
