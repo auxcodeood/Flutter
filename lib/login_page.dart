@@ -4,17 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
+import 'colors.dart';
 import 'data/graphql.dart';
 import 'data/firebase.dart';
 import 'types/locale.dart';
 import 'biometrics.dart';
 import 'camera.dart';
 //import 'mongo.dart';
-
-// ignore: constant_identifier_names
-const LIME_GREEN = Color(0xFFC4FF19);
-// ignore: constant_identifier_names
-const DARK_GREEN = Color(0xFF043D44);
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -36,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _translations = executeQuery(Locale.EN);
+    _translations = buttonsQuery(Locale.EN);
     _getCamera();
   }
 
@@ -88,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                             print(snapshot.data!.data!['home']['loginButton']);
                             print(snapshot.data!.data!['home']['selfieButton']);
                             setState(() {
-                              _translations = executeQuery(locale);
+                              _translations = buttonsQuery(locale);
                             });
                           },
                         ),

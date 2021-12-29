@@ -16,6 +16,7 @@ Future<void> firebaseInit() async {
 }
 
 CollectionReference users = FirebaseFirestore.instance.collection('users');
+CollectionReference products = FirebaseFirestore.instance.collection('products');
 
 Future<void> addUser(String email, String password) {
   return users
@@ -50,6 +51,11 @@ Future<void> updateByEmail(String email, dynamic user) async {
         ' err - ' +
         e.message!);
   }
+}
+
+Future<dynamic> getProducts() async {
+  final allProducts =  (await products.get()).docs.map((doc) => doc.data()).toList();
+  return allProducts;
 }
 
 Future<void> register(String email, String password) async {

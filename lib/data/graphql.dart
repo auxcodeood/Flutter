@@ -19,35 +19,36 @@ Future<void> initGraphQlClient() async {
   );
 }
 
-// String allHomes = """
-//       query allHomesEN {
-//         home(locale: $locale) {
-//           anotherTitle
-//           homeTitle
-//           loginButton
-//         }
-//       }
-// """;
-
-// String allHomesNew = """
-//       query querryName {
-//   home(locale: $locale) {
-//     loginButton
-//   }
-// }
-// """;
-
-Future<QueryResult> executeQuery(String locale) async {
-  String allHomesNew = """
+Future<QueryResult> buttonsQuery(String locale) async {
+  String allHomes = """
       query querryName {
-  home(locale: $locale) {
-    loginButton
-    selfieButton
+        home(locale: $locale) {
+          loginButton
+          selfieButton
+        }
+}
+""";
+
+  final results = await client!.query(QueryOptions(document: gql(allHomes)));
+  print(results.data!["home"]);
+  return results;
+}
+
+Future<QueryResult> productsQuery(String locale) async {
+  String allProducts = """
+      query querryName {
+        product(locale: $locale) {
+          us88160r1014Price
+          us88160r1014Name
+          us88160r1014Currency
+          us0079031078Price
+          us0079031078Name
+          us0079031078Currency
   }
 }
 """;
 
-  final results = await client!.query(QueryOptions(document: gql(allHomesNew)));
-  print(results.data!["home"]);
+  final results = await client!.query(QueryOptions(document: gql(allProducts)));
+  print(results.data!["product"]);
   return results;
 }
