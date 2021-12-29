@@ -13,10 +13,11 @@ Future<void> initGraphQlClient() async {
   final Link link = authLink.concat(httpLink);
 
   client = GraphQLClient(
-    link: link,
-    // The default store is the InMemoryStore, which does NOT persist to disk
-    cache: GraphQLCache(store: HiveStore()),
-  );
+      link: link,
+      // The default store is the InMemoryStore, which does NOT persist to disk
+      cache: GraphQLCache(store: HiveStore()),
+      defaultPolicies:
+          DefaultPolicies(query: Policies(fetch: FetchPolicy.cacheAndNetwork,error: ErrorPolicy.all)));
 }
 
 Future<QueryResult> buttonsQuery(String locale) async {
@@ -44,11 +45,15 @@ Future<QueryResult> productsQuery(String locale) async {
           us0079031078Price
           us0079031078Name
           us0079031078Currency
+              us0231351067Price
+    us0231351067Name
+    us0231351067Currency
   }
 }
 """;
 
-  final results = await client!.query(QueryOptions(document: gql(allProducts)));
-  print(results.data!["product"]);
+
+   var results = await client!.query(QueryOptions(document: gql(allProducts)));
+  //print(results.data!["product"]);
   return results;
 }

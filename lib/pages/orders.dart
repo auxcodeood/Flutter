@@ -15,6 +15,9 @@ class OrderPage extends StatefulWidget {
   _OrderPageState createState() => _OrderPageState();
 }
 
+var translations;
+var products;
+
 class _OrderPageState extends State<OrderPage> {
   late Future<QueryResult> _translations;
   late Future<dynamic> _products;
@@ -26,8 +29,50 @@ class _OrderPageState extends State<OrderPage> {
     _products = getProducts();
   }
 
+  Widget _buildListView() {
+    return ListView.separated(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(8),
+      itemCount: products.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Container(
+          height: 80,
+          color: LIME_GREEN,
+          child: Center(
+            child: ListTile(
+              leading: const Icon(Icons.assessment_outlined, color: DARK_GREEN),
+              title: Text(
+                translations.data!.data != null
+                    ? translations.data!.data!['product']
+                            ['${products[index]['isin'].toLowerCase()}Name'] ??
+                        "missing"
+                    : "missing translation",
+                style: const TextStyle(
+                    color: DARK_GREEN, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                '${translations.data!.data!['product']['${products[index]['isin'].toLowerCase()}Price'] ?? "price"} ${translations.data!.data!['product']['${products[index]['isin'].toLowerCase()}Currency'] ?? "currency"}',
+                style: const TextStyle(color: DARK_GREEN),
+              ),
+              onTap: () =>
+                  {print('tapped ${products[index]['isin'].toLowerCase()}')},
+              onLongPress: () =>
+                  {print('pressed ${products[index]['isin'].toLowerCase()}')},
+            ),
+          ),
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      _products = getProducts();
+    });
     return Scaffold(
       backgroundColor: DARK_GREEN,
       body: Column(
@@ -35,9 +80,11 @@ class _OrderPageState extends State<OrderPage> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 50),
           ),
+          //LanguageToggle(),
           FutureBuilder<QueryResult>(
               future: _translations,
               builder: (context, snapshot) {
+                translations = snapshot;
                 return Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -59,10 +106,6 @@ class _OrderPageState extends State<OrderPage> {
                             } else {
                               locale = Locale.BG;
                             }
-                            print(snapshot.data!.data!['product']
-                                ['us88160r1014Name']);
-                            print(snapshot.data!.data!['product']
-                                ['us007903107Name']);
                             setState(() {
                               _translations = productsQuery(locale);
                             });
@@ -71,13 +114,15 @@ class _OrderPageState extends State<OrderPage> {
                         FutureBuilder<dynamic>(
                             future: _products,
                             builder: (context, snapshot) {
-                              final stuff = snapshot.data;
-                              return ListView(
-                                children: [
-                                  Text("US0079031078"),
-                                  Text("US88160R1014")
-                                ],
-                              );
+                              products = snapshot.data;
+
+                              if (products != null &&
+                                  translations != null &&
+                                  translations.data != null) {
+                                return _buildListView();
+                              } else {
+                                return const Text("Loading...");
+                              }
                             })
                       ],
                     ),
