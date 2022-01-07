@@ -169,41 +169,23 @@ class _LoginPageState extends State<LoginPage> {
                               //     emailController.text, passwordController.text);
                               //await executeQuery();
                               Navigator.pushNamed(context, "/home");
-                              final user =
-                                  await getUserByEmail(emailController.text);
-                              if (user['password'] == passwordController.text) {
-                                print("password is correct");
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return SimpleDialog(
-                                        title: Text('Your submitted data '),
-                                        children: [
-                                          ListTile(
-                                            leading: Icon(Icons.mail),
-                                            title: Text(emailController.text
-                                                .toString()),
-                                          ),
-                                          ListTile(
-                                            leading: Icon(Icons.lock),
-                                            title: Text(passwordController.text
-                                                .toString()),
-                                          ),
-                                        ],
-                                      );
-                                    });
-                              } else
-                                print("wrong password");
                             },
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  snapshot.data!.data!['home']['loginButton'],
+                                  snapshot.hasData
+                                      ? snapshot.data!.data!['home']
+                                          ['loginButton']
+                                      : 'Login',
                                   style: TextStyle(
                                       color: DARK_GREEN,
                                       fontWeight: FontWeight.bold),
-                                )
+                                ),
+                                Icon(
+                                  Icons.login,
+                                  color: DARK_GREEN,
+                                ),
                               ],
                             )),
                         SizedBox(height: 16),
@@ -242,7 +224,10 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                snapshot.data!.data!['home']['selfieButton'],
+                                snapshot.hasData
+                                    ? snapshot.data!.data!['home']
+                                        ['selfieButton']
+                                    : 'Selfie',
                                 style: TextStyle(
                                     color: DARK_GREEN,
                                     fontWeight: FontWeight.bold),
