@@ -25,7 +25,9 @@ Future<QueryResult> buttonsQuery(String locale) async {
       query querryName {
         home(locale: $locale) {
           loginButton
-          selfieButton
+          loginTitle
+          registerTitle
+          registerButton
         }
 }
 """;

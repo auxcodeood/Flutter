@@ -26,6 +26,8 @@ class _OrderPageState extends State<OrderPage> {
   late Future<dynamic> _products;
   late Future<dynamic> _orders;
 
+  int toggleIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -151,50 +153,58 @@ class _OrderPageState extends State<OrderPage> {
           //LanguageToggle(),
           FutureBuilder<QueryResult>(
               future: _translations,
-              builder: (context, snapshot) {
-                translations = snapshot;
-                return Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    constraints: const BoxConstraints.expand(),
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 32),
-                          alignment: Alignment.topLeft,
-                          child: ToggleSwitch(
-                            initialLabelIndex: 0,
-                            totalSwitches: 2,
-                            labels: const ['EN', 'BG'],
-                            onToggle: (index) async {
-                              String locale;
-                              if (index == 0) {
-                                locale = Locale.EN;
-                              } else {
-                                locale = Locale.BG;
-                              }
-                              setState(() {
-                                _translations = productsQuery(locale);
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 50),
-                        ),
-                        const Text(
-                          'Products',
-                          style: TextStyle(
-                              fontSize: 32, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildListView()
-                      ],
-                    ),
-                  ),
-                );
-              })
+              builder: (context, snapshot) => snapshot.hasData
+                  ? buildExpandedBuilder(context, snapshot)
+                  : const SizedBox())
         ],
+      ),
+    );
+  }
+
+  Expanded buildExpandedBuilder(BuildContext context, snapshot) {
+    translations = snapshot;
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        constraints: const BoxConstraints.expand(),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 32),
+              alignment: Alignment.topLeft,
+              child: ToggleSwitch(
+                initialLabelIndex: toggleIndex,
+                totalSwitches: 2,
+                activeBgColor: [LIME_GREEN],
+                activeFgColor: DARK_GREEN,
+                inactiveBgColor: Colors.blueGrey,
+                inactiveFgColor: Colors.white,
+                labels: const ['EN', 'BG'],
+                onToggle: (index) async {
+                  String locale;
+                  if (index == 0) {
+                    locale = Locale.EN;
+                  } else {
+                    locale = Locale.BG;
+                  }
+                  setState(() {
+                    _translations = productsQuery(locale);
+                    toggleIndex = index;
+                  });
+                },
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 50),
+            ),
+            const Text(
+              'Products',
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            _buildListView()
+          ],
+        ),
       ),
     );
   }
