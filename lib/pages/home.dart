@@ -56,9 +56,10 @@ class _HomeWidgetState extends State<HomePage> {
               },
             ),
             ListTile(
-              title: const Text('Funding'),
+              title: const Text('Photos'),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.pushNamed(context, '/photos');
               },
             ),
             ListTile(

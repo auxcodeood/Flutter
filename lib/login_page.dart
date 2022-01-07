@@ -1,4 +1,3 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -7,8 +6,6 @@ import 'colors.dart';
 import 'data/graphql.dart';
 import 'data/firebase.dart';
 import 'types/locale.dart';
-import 'biometrics.dart';
-import 'camera.dart';
 //import 'mongo.dart';
 
 dynamic settings = {};
@@ -29,25 +26,12 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isVisible = true;
-  CameraDescription _camera = CameraDescription(
-      name: 'asd',
-      lensDirection: CameraLensDirection.back,
-      sensorOrientation: 2);
   late Future<QueryResult> _translations;
 
   @override
   void initState() {
     super.initState();
     _translations = buttonsQuery(Locale.EN);
-    _getCamera();
-  }
-
-  Future<void> _getCamera() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    final cameras = await availableCameras();
-    setState(() {
-      _camera = cameras.first;
-    });
   }
 
   void _onToggle(int index) {
@@ -200,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: const [
                               Text(
-                                'Fingerprint',
+                                'Use fingerprint',
                                 style: TextStyle(
                                     color: DARK_GREEN,
                                     fontWeight: FontWeight.bold),
@@ -210,41 +194,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           onPressed: () {
                             Navigator.pushNamed(context, '/biometrics');
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            fixedSize: Size(240, 50),
-                            primary: LIME_GREEN,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 50, vertical: 10),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                snapshot.hasData
-                                    ? snapshot.data!.data!['home']
-                                        ['selfieButton']
-                                    : 'Selfie',
-                                style: TextStyle(
-                                    color: DARK_GREEN,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Icon(
-                                Icons.camera,
-                                color: DARK_GREEN,
-                              ),
-                            ],
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      TakePictureScreen(camera: _camera)),
-                            );
                           },
                         ),
                       ],
