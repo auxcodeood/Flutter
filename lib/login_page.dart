@@ -50,8 +50,11 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  // Ensure that plugin services are initialized so that `availableCameras()`
-  // can be called before `runApp()`
+  void _onToggle(int index) {
+    setState(() {
+      _translations = buttonsQuery(index == 0 ? Locale.EN : Locale.BG);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,20 +82,14 @@ class _LoginPageState extends State<LoginPage> {
                         ToggleSwitch(
                           initialLabelIndex: 0,
                           totalSwitches: 2,
-                          labels: ['EN', 'BG'],
-                          onToggle: (index) async {
-                            String locale;
-                            if (index == 0) {
-                              locale = Locale.EN;
-                            } else {
-                              locale = Locale.BG;
-                            }
-                            print(snapshot.data!.data!['home']['loginButton']);
-                            print(snapshot.data!.data!['home']['selfieButton']);
-                            setState(() {
-                              _translations = buttonsQuery(locale);
-                            });
-                          },
+                          labels: const ['EN', 'BG'],
+                          activeBgColor: [LIME_GREEN],
+                          activeFgColor: DARK_GREEN,
+                          inactiveBgColor: Colors.blueGrey,
+                          inactiveFgColor: Colors.white,
+                          animate: true,
+                          curve: Curves.bounceInOut,
+                          onToggle: _onToggle,
                         ),
                         const SizedBox(height: 50),
                         const Text(
@@ -230,11 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           ),
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Biometrics()),
-                            );
+                            Navigator.pushNamed(context, '/biometrics');
                           },
                         ),
                         SizedBox(height: 16),

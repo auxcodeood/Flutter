@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/biometrics.dart';
+import 'package:flutter_app/pages/dashboard.dart';
 import 'package:flutter_app/pages/home.dart';
 import 'package:flutter_app/pages/orders.dart';
+import 'package:flutter_app/pages/questionnaire.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'data/firebase.dart';
@@ -31,7 +34,10 @@ class MyApp extends StatelessWidget {
           routes: {
             '/home': (context) => const HomePage(),
             '/login': (context) => const LoginPage(),
-            '/orders': (context) => const OrderPage()
+            '/orders': (context) => const OrderPage(),
+            '/dashboard': (context) => const Dashboard(),
+            '/questionnaire': (context) => const Questionnaire(),
+            '/biometrics': (context) => Biometrics()
           },
         ));
   }
