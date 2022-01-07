@@ -1,4 +1,3 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -7,8 +6,6 @@ import 'colors.dart';
 import 'data/graphql.dart';
 import 'data/firebase.dart';
 import 'types/locale.dart';
-import 'biometrics.dart';
-import 'camera.dart';
 //import 'mongo.dart';
 
 dynamic settings = {};
@@ -29,29 +26,19 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isVisible = true;
-  CameraDescription _camera = CameraDescription(
-      name: 'asd',
-      lensDirection: CameraLensDirection.back,
-      sensorOrientation: 2);
   late Future<QueryResult> _translations;
 
   @override
   void initState() {
     super.initState();
     _translations = buttonsQuery(Locale.EN);
-    _getCamera();
   }
 
-  Future<void> _getCamera() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    final cameras = await availableCameras();
+  void _onToggle(int index) {
     setState(() {
-      _camera = cameras.first;
+      _translations = buttonsQuery(index == 0 ? Locale.EN : Locale.BG);
     });
   }
-
-  // Ensure that plugin services are initialized so that `availableCameras()`
-  // can be called before `runApp()`
 
   @override
   Widget build(BuildContext context) {
@@ -79,20 +66,14 @@ class _LoginPageState extends State<LoginPage> {
                         ToggleSwitch(
                           initialLabelIndex: 0,
                           totalSwitches: 2,
-                          labels: ['EN', 'BG'],
-                          onToggle: (index) async {
-                            String locale;
-                            if (index == 0) {
-                              locale = Locale.EN;
-                            } else {
-                              locale = Locale.BG;
-                            }
-                            print(snapshot.data!.data!['home']['loginButton']);
-                            print(snapshot.data!.data!['home']['selfieButton']);
-                            setState(() {
-                              _translations = buttonsQuery(locale);
-                            });
-                          },
+                          labels: const ['EN', 'BG'],
+                          activeBgColor: [LIME_GREEN],
+                          activeFgColor: DARK_GREEN,
+                          inactiveBgColor: Colors.blueGrey,
+                          inactiveFgColor: Colors.white,
+                          animate: true,
+                          curve: Curves.bounceInOut,
+                          onToggle: _onToggle,
                         ),
                         const SizedBox(height: 50),
                         const Text(
@@ -172,41 +153,23 @@ class _LoginPageState extends State<LoginPage> {
                               //     emailController.text, passwordController.text);
                               //await executeQuery();
                               Navigator.pushNamed(context, "/home");
-                              final user =
-                                  await getUserByEmail(emailController.text);
-                              if (user['password'] == passwordController.text) {
-                                print("password is correct");
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return SimpleDialog(
-                                        title: Text('Your submitted data '),
-                                        children: [
-                                          ListTile(
-                                            leading: Icon(Icons.mail),
-                                            title: Text(emailController.text
-                                                .toString()),
-                                          ),
-                                          ListTile(
-                                            leading: Icon(Icons.lock),
-                                            title: Text(passwordController.text
-                                                .toString()),
-                                          ),
-                                        ],
-                                      );
-                                    });
-                              } else
-                                print("wrong password");
                             },
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  snapshot.data!.data!['home']['loginButton'],
+                                  snapshot.hasData
+                                      ? snapshot.data!.data!['home']
+                                          ['loginButton']
+                                      : 'Login',
                                   style: TextStyle(
                                       color: DARK_GREEN,
                                       fontWeight: FontWeight.bold),
-                                )
+                                ),
+                                Icon(
+                                  Icons.login,
+                                  color: DARK_GREEN,
+                                ),
                               ],
                             )),
                         SizedBox(height: 16),
@@ -221,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: const [
                               Text(
-                                'Fingerprint',
+                                'Use fingerprint',
                                 style: TextStyle(
                                     color: DARK_GREEN,
                                     fontWeight: FontWeight.bold),
@@ -230,43 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           ),
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Biometrics()),
-                            );
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            fixedSize: Size(240, 50),
-                            primary: LIME_GREEN,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 50, vertical: 10),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                snapshot.data!.data!['home']['selfieButton'],
-                                style: TextStyle(
-                                    color: DARK_GREEN,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Icon(
-                                Icons.camera,
-                                color: DARK_GREEN,
-                              ),
-                            ],
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      TakePictureScreen(camera: _camera)),
-                            );
+                            Navigator.pushNamed(context, '/biometrics');
                           },
                         ),
                       ],

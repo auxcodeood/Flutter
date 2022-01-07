@@ -1,30 +1,31 @@
-// // This is a basic Flutter widget test.
-// //
-// // To perform an interaction with a widget in your test, use the WidgetTester
-// // utility that Flutter provides. For example, you can send tap and scroll
-// // gestures. You can also use WidgetTester to find child widgets in the widget
-// // tree, read text, and verify that the values of widget properties are correct.
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_app/main_dart' as app;
 
-// import 'package:flutter_app/main.dart';
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-// void main() {
-//   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-//     // Build our app and trigger a frame.
-//     await tester.pumpWidget(const MyApp());
+  group('end-to-end test', () {
+    testWidgets('tap on the floating action button, verify counter',
+        (WidgetTester tester) async {
+      app.main();
+      await tester.pumpAndSettle();
 
-//     // Verify that our counter starts at 0.
-//     expect(find.text('0'), findsOneWidget);
-//     expect(find.text('1'), findsNothing);
+      // Verify the counter starts at 0.
+      expect(find.text('0'), findsOneWidget);
 
-//     // Tap the '+' icon and trigger a frame.
-//     await tester.tap(find.byIcon(Icons.add));
-//     await tester.pump();
+      // Finds the floating action button to tap on.
+      final Finder fab = find.byTooltip('Increment');
 
-//     // Verify that our counter has incremented.
-//     expect(find.text('0'), findsNothing);
-//     expect(find.text('1'), findsOneWidget);
-//   });
-// }
+      // Emulate a tap on the floating action button.
+      await tester.tap(fab);
+
+      // Trigger a frame.
+      await tester.pumpAndSettle();
+
+      // Verify the counter increments by 1.
+      expect(find.text('1'), findsOneWidget);
+    });
+  });
+}

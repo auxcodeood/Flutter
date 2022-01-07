@@ -145,7 +145,6 @@ class _OrderPageState extends State<OrderPage> {
       _products = getProducts();
     });
     return Scaffold(
-      appBar: AppBar(title: const Text('Orders')),
       backgroundColor: DARK_GREEN,
       body: Column(
         children: [

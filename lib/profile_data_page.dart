@@ -131,7 +131,6 @@ class ProfileDataPageState extends State<ProfileDataPage> {
     var future = getUser();
 
     return Scaffold(
-        appBar: AppBar(title: const Text('Profile Data')),
         body: Container(
             margin: const EdgeInsets.all(15),
             child: FutureBuilder(
