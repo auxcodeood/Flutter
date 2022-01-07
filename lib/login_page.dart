@@ -75,7 +75,6 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           children: [
             ToggleSwitch(
-
               initialLabelIndex: toggleIndex,
               totalSwitches: 2,
               labels: const ['EN', 'BG'],

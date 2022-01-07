@@ -195,6 +195,13 @@ class _OrderPageState extends State<OrderPage> {
               ),
             ),
             Container(
+                margin: const EdgeInsets.only(top: 5,left:15),
+                alignment: Alignment.topLeft,
+                child: Image.network(
+                  translations.data.data!['home']['myImage']["url"],
+                  width: 100,
+                )),
+            Container(
               padding: const EdgeInsets.symmetric(vertical: 50),
             ),
             const Text(
