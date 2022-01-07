@@ -45,13 +45,17 @@ Future<QueryResult> productsQuery(String locale) async {
           us0079031078Price
           us0079031078Name
           us0079031078Currency
-              us0231351067Price
-    us0231351067Name
-    us0231351067Currency
-  }
+          us0231351067Price
+          us0231351067Name
+          us0231351067Currency
+        }
+        home(locale: $locale) {
+          myImage {
+            url
+          }
+        }
 }
 """;
-
 
    var results = await client!.query(QueryOptions(document: gql(allProducts)));
   //print(results.data!["product"]);
