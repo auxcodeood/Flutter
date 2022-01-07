@@ -1,5 +1,4 @@
 import 'package:camera/camera.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -11,6 +10,13 @@ import 'types/locale.dart';
 import 'biometrics.dart';
 import 'camera.dart';
 //import 'mongo.dart';
+
+dynamic settings = {};
+Future<void> main() async {
+  await initGraphQlClient();
+  await firebaseInit();
+  settings = (await getSettings());
+}
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -165,6 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                               // await signin(
                               //     emailController.text, passwordController.text);
                               //await executeQuery();
+                              Navigator.pushNamed(context, "/home");
                               final user =
                                   await getUserByEmail(emailController.text);
                               if (user['password'] == passwordController.text) {

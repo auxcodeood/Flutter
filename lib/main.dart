@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/profile_data_page.dart';
+import 'package:flutter_app/pages/home.dart';
+import 'package:flutter_app/pages/orders.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'data/firebase.dart';
 import 'data/graphql.dart';
+import 'login_page.dart';
 //import 'mongo.dart';
 
 dynamic settings = {};
@@ -23,7 +25,14 @@ class MyApp extends StatelessWidget {
         client: ValueNotifier(client!),
         child: MaterialApp(
           theme: settings['darkMode'] ? ThemeData.dark() : ThemeData.light(),
-          home: const ProfileDataPage(),
+          debugShowCheckedModeBanner: false,
+          home: const LoginPage(),
+          initialRoute: '/',
+          routes: {
+            '/home': (context) => const HomePage(),
+            '/login': (context) => const LoginPage(),
+            '/orders': (context) => const OrderPage()
+          },
         ));
   }
 }
