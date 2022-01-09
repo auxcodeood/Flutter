@@ -128,12 +128,12 @@ Future<void> register(String email, String password) async {
   }
 }
 
-Future<void> signin(String email, String password) async {
+Future<String> signin(String email, String password) async {
   try {
     UserCredential userCredential = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     await SyncUser(email);
-    print("logged in successfully");
+    return "success";
   } on FirebaseAuthException catch (e) {
     if (e.code == 'user-not-found') {
       print('No user found for that email.');
@@ -142,6 +142,8 @@ Future<void> signin(String email, String password) async {
     } else if (e.code == "invalid-email") {
       print("Invalid email");
     }
+    await SyncUser(email);
+    return e.code;
   }
 }
 
@@ -163,6 +165,9 @@ Future<void> SyncUser(String email) async {
   try {
     user = await getUserByEmail(email);
   } on IndexError catch (e) {
+    await addUser(email);
+    user = await getUserByEmail(email);
+  } on RangeError catch (e) {
     await addUser(email);
     user = await getUserByEmail(email);
   } finally {

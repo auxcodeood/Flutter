@@ -48,6 +48,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     //var translations = pesho;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: DARK_GREEN,
       body: Column(
         children: [
@@ -87,6 +88,18 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (context) => AlertDialog(
                 title: Text('User with email $email registered successfully'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('OK'))
+                ]));
+  }
+
+    Future wrongLoginDialog(String result) {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+                title: Text("There was an error with the login: $result. But we'll let you pass for the demo :)"),
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.of(context).pop(),
@@ -188,7 +201,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 onPressed: () async {
                   if (isLogin) {
-                    await signin(emailController.text, passwordController.text);
+                    var result = await signin(emailController.text, passwordController.text);
+                    if(result != "success"){
+                      await wrongLoginDialog(result);
+                    }
                     Navigator.pushNamed(context, "/home");
                   } else {
                     await register(

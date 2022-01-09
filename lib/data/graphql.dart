@@ -17,7 +17,7 @@ Future<void> initGraphQlClient() async {
       // The default store is the InMemoryStore, which does NOT persist to disk
       cache: GraphQLCache(store: HiveStore()),
       defaultPolicies:
-          DefaultPolicies(query: Policies(fetch: FetchPolicy.cacheAndNetwork,error: ErrorPolicy.all)));
+          DefaultPolicies(query: Policies(fetch: FetchPolicy.cacheFirst ,error: ErrorPolicy.all)));
 }
 
 Future<QueryResult> buttonsQuery(String locale) async {
