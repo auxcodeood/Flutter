@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/data/firebase.dart';
+import 'package:flutter_app/main.dart';
 import 'package:flutter_app/types/gender.dart';
 
 class ProfileDataPage extends StatefulWidget {
@@ -77,7 +78,9 @@ class ProfileDataPageState extends State<ProfileDataPage> {
     DateTime lastDate = DateTime.now().subtract(const Duration(days: 18 * 365));
 
     return InputDatePickerFormField(
-        initialDate: (user['birthDate'] as Timestamp).toDate(),
+        initialDate: user['birthDate'] == null
+            ? null
+            : (user['birthDate'] as Timestamp).toDate(),
         firstDate: DateTime(1900),
         lastDate: lastDate,
         errorFormatText: 'Invalid Birth Date format',
@@ -138,7 +141,7 @@ class ProfileDataPageState extends State<ProfileDataPage> {
                 builder: (BuildContext ctx, AsyncSnapshot<dynamic> snapshot) {
                   List<Widget> children;
                   if (snapshot.hasData && !_saved) {
-                    user = snapshot.data.data();
+                    user = loggedUser; //snapshot.data.data();
                     _gender = user['gender'] == "Mrs" ? Gender.Mrs : Gender.Mr;
                     children = <Widget>[
                       Form(

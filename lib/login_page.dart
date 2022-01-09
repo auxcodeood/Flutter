@@ -28,6 +28,8 @@ class _LoginPageState extends State<LoginPage> {
   bool isVisible = true;
   late Future<QueryResult> _translations;
   int toggleIndex = 0;
+  int registerToggleIndex = 0;
+  bool isLogin = true;
 
   @override
   void initState() {
@@ -62,6 +64,36 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  ToggleSwitch buildRegisterToggle() {
+    return ToggleSwitch(
+        initialLabelIndex: registerToggleIndex,
+        totalSwitches: 2,
+        labels: const ['Login', 'Register'],
+        activeBgColor: [LIME_GREEN],
+        activeFgColor: DARK_GREEN,
+        inactiveBgColor: Colors.blueGrey,
+        inactiveFgColor: Colors.white,
+        curve: Curves.bounceInOut,
+        onToggle: (int index) {
+          setState(() {
+            isLogin = index == 0 ? true : false;
+            registerToggleIndex = index;
+          });
+        });
+  }
+
+  Future openDialog(String email) {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+                title: Text('User with email $email registered successfully'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('OK'))
+                ]));
+  }
+
   Expanded buildFormBuilder(BuildContext context, data) {
     print("snapshot data");
     print(data);
@@ -87,7 +119,9 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 50),
             Text(
-              data.data!['home']['loginTitle'],
+              isLogin
+                  ? data.data!['home']['loginTitle']
+                  : data.data!['home']['registerTitle'],
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -153,17 +187,27 @@ class _LoginPageState extends State<LoginPage> {
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                 ),
                 onPressed: () async {
-                  // await addUser(emailController.text,
-                  //     passwordController.text);
-                  await signin(emailController.text, passwordController.text);
-                  //await executeQuery();
-                  Navigator.pushNamed(context, "/home");
+                  if (isLogin) {
+                    await signin(emailController.text, passwordController.text);
+                    Navigator.pushNamed(context, "/home");
+                  } else {
+                    await register(
+                        emailController.text, passwordController.text);
+                    openDialog(emailController.text);
+                    setState(() {
+                      isLogin = true;
+                      registerToggleIndex = 0;
+                    });
+                    isLogin = true;
+                  }
                 },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      data.data!['home']['loginButton'],
+                      isLogin
+                          ? data.data!['home']['loginButton']
+                          : data.data!['home']['registerButton'],
                       style: TextStyle(
                           color: DARK_GREEN, fontWeight: FontWeight.bold),
                     ),
@@ -195,6 +239,8 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.pushNamed(context, '/biometrics');
               },
             ),
+            const SizedBox(height: 32),
+            buildRegisterToggle()
           ],
         ),
       ),

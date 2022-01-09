@@ -16,6 +16,7 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 
 dynamic settings = {};
 List<CameraDescription> cameras = [];
+Map<String, dynamic> loggedUser = {};
 Future<void> main() async {
   await initGraphQlClient();
   await firebaseInit();

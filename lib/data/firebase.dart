@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/main.dart';
 
 class Order {
   final String isin;
@@ -49,11 +50,10 @@ CollectionReference products =
 CollectionReference settings =
     FirebaseFirestore.instance.collection('settings');
 
-Future<void> addUser(String email, String password) {
+Future<void> addUser(String email) {
   return users
       .add({
         'email': email,
-        'password': password,
       })
       .then((value) => print("User Added"))
       .catchError((error) => print("Failed to add user: $error"));
@@ -70,12 +70,14 @@ Future<dynamic> getUserByEmail(String email) async {
 
 Future<dynamic> getUser() async {
   final user = await users.get().then((snapshot) => snapshot.docs[0]);
+  //loggedUser = user.data();
   return user;
 }
 
 Future<void> updateByEmail(String email, dynamic user) async {
   try {
-    return users.doc((await getUserByEmail(email)).id).update(user);
+    await users.doc((await getUserByEmail(email)).id).update(user);
+    await SyncUser(email);
   } on FirebaseException catch (e) {
     print('Something went wrong while updating user with email ' +
         email +
@@ -130,14 +132,14 @@ Future<void> signin(String email, String password) async {
   try {
     UserCredential userCredential = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
-        print("logged in successfully");
+    await SyncUser(email);
+    print("logged in successfully");
   } on FirebaseAuthException catch (e) {
     if (e.code == 'user-not-found') {
       print('No user found for that email.');
-      //await register(email, password);
     } else if (e.code == 'wrong-password') {
       print('Wrong password provided for that user.');
-    } else if (e.code == "invalid-email"){
+    } else if (e.code == "invalid-email") {
       print("Invalid email");
     }
   }
@@ -153,5 +155,17 @@ Future<dynamic>? getSettings() async {
         'Something went wrong while fetching settings from firestore, err - ' +
             e.toString());
     return null;
+  }
+}
+
+Future<void> SyncUser(String email) async {
+  dynamic user = {};
+  try {
+    user = await getUserByEmail(email);
+  } on IndexError catch (e) {
+    await addUser(email);
+    user = await getUserByEmail(email);
+  } finally {
+    loggedUser = user.data();
   }
 }
