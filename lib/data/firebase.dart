@@ -99,8 +99,8 @@ Future<List<QueryDocumentSnapshot<Object?>>> getOrders() async {
   return tempOrders;
 }
 
-Future<void> insertOrders(String isin) async {
-  orders.add(Order(isin: isin)).then((value) => print("Order Added"));
+Future<void> insertOrder(Map<String, dynamic> order) async {
+  await updateByEmail(loggedUser['email'],{"orders":FieldValue.arrayUnion([order])});
 }
 
 Future<void> deleteOrder(String isin) async {

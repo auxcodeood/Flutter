@@ -8,14 +8,14 @@ import 'package:flutter_app/colors.dart';
 import 'package:flutter_app/data/firebase.dart';
 import 'package:flutter_app/types/locale.dart';
 
-class OrderPage extends StatefulWidget {
-  const OrderPage({Key? key}) : super(key: key);
+class ProductPage extends StatefulWidget {
+  const ProductPage({Key? key}) : super(key: key);
 
   @override
-  _OrderPageState createState() => _OrderPageState();
+  _ProductPageState createState() => _ProductPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
+class _ProductPageState extends State<ProductPage> {
   TextEditingController priceController = TextEditingController();
   dynamic translations;
   dynamic products;
@@ -45,7 +45,7 @@ class _OrderPageState extends State<OrderPage> {
     return ListTile(
       leading: const Icon(Icons.assessment_outlined, color: DARK_GREEN),
       title: Text(
-        translations['product']['${isin.toLowerCase()}Name'] ?? "missing",
+        translations['product']['${isin.toLowerCase()}Name'] ?? isin,
         style: const TextStyle(color: DARK_GREEN, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
@@ -130,16 +130,16 @@ class _OrderPageState extends State<OrderPage> {
                   width: 100,
                 )),
             
-            //Orders
+            //Products
             Container(
               padding: const EdgeInsets.symmetric(vertical: 50),
             ),
             const Text(
-              'Orders',
+              'Products',
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            _buildListView()
+            _buildListView(),
           ],
         ),
       ),

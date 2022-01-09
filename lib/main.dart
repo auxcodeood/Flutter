@@ -4,6 +4,7 @@ import 'package:flutter_app/pages/camera.dart';
 import 'package:flutter_app/pages/dashboard.dart';
 import 'package:flutter_app/pages/home.dart';
 import 'package:flutter_app/pages/orders.dart';
+import 'package:flutter_app/pages/products.dart';
 import 'package:flutter_app/pages/questionnaire.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
           routes: {
             '/home': (context) => const HomePage(),
             '/login': (context) => const LoginPage(),
+            '/products': (context) => const ProductPage(),
             '/orders': (context) => const OrderPage(),
             '/dashboard': (context) => const Dashboard(),
             '/questionnaire': (context) => const Questionnaire(),

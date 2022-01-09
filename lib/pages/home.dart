@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/colors.dart';
 import 'package:flutter_app/pages/dashboard.dart';
 import 'package:flutter_app/pages/orders.dart';
+import 'package:flutter_app/pages/products.dart';
 import 'package:flutter_app/profile_data_page.dart';
 
 import '../login_page.dart';
@@ -27,6 +28,7 @@ class _HomeWidgetState extends State<HomePage> {
 
   final screens = [
     const Dashboard(),
+    const ProductPage(),
     const OrderPage(),
     const ProfileDataPage()
   ];
@@ -82,6 +84,10 @@ class _HomeWidgetState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.business),
+            label: 'Products',
+          ),
+           BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart_outlined),
             label: 'Orders',
           ),
           BottomNavigationBarItem(
