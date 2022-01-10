@@ -38,40 +38,6 @@ class _ProductPageState extends State<ProductPage> {
     super.dispose();
   }
 
-  Widget _buildTile(int index) {
-    final isin = products[index]['isin'];
-    final price =
-        '${translations['product']['${isin.toLowerCase()}Price'] ?? "price"} ${translations['product']['${isin.toLowerCase()}Currency'] ?? "currency"}';
-    return ListTile(
-      leading: const Icon(Icons.assessment_outlined, color: DARK_GREEN),
-      title: Text(
-        translations['product']['${isin.toLowerCase()}Name'] ?? isin,
-        style: const TextStyle(color: DARK_GREEN, fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text(
-        price,
-        style: const TextStyle(color: DARK_GREEN),
-      ),
-      trailing: const Icon(Icons.shopping_cart_outlined, color: DARK_GREEN),
-      onTap: () async {
-        Map<String, dynamic> order = await _onProductBuy(isin, price);
-        print(order);
-      },
-      onLongPress: () async {
-        // await deleteOrder(isin);
-        print('pressed ${isin.toLowerCase()}');
-      },
-    );
-  }
-
-  Widget _buildListView() {
-    return FutureBuilder<dynamic>(
-        future: _products,
-        builder: (context, snapshot) => snapshot.hasData
-            ? buildProductsList(context, snapshot)
-            : const SizedBox());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,7 +61,7 @@ class _ProductPageState extends State<ProductPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         constraints: const BoxConstraints.expand(),
-        child: Column(
+        child: ListView (
           children: [
             Container(
               margin: const EdgeInsets.only(top: 32),
@@ -129,7 +95,7 @@ class _ProductPageState extends State<ProductPage> {
                   translations['home']['myImage']["url"],
                   width: 100,
                 )),
-            
+
             //Products
             Container(
               padding: const EdgeInsets.symmetric(vertical: 50),
@@ -144,6 +110,14 @@ class _ProductPageState extends State<ProductPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildListView() {
+    return FutureBuilder<dynamic>(
+        future: _products,
+        builder: (context, snapshot) => snapshot.hasData
+            ? buildProductsList(context, snapshot)
+            : const SizedBox());
   }
 
   ListView buildProductsList(BuildContext context, snapshot) {
@@ -166,42 +140,73 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  Future<dynamic> _onProductBuy(String isin, String price) => showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-              "How much ${translations['product']['${isin.toLowerCase()}Name']} stock do you want to buy at price $price?"),
-          content: TextField(
-            autofocus: true,
-            keyboardType: TextInputType.number,
-            decoration:
-                const InputDecoration(hintText: "Enter number of assets"),
-            controller: priceController,
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Submit'),
-              onPressed: () async {
-                Map<String, dynamic> order = {
-                  "isin": isin,
-                  "name": translations['product']['${isin.toLowerCase()}Name'],
-                  "price": price,
-                  "quantity": priceController.text
-                };
-                await insertOrder(order);
-                priceController.clear();
-                Navigator.of(context).pop(order);
-              },
-            ),
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      });
+  Widget _buildTile(int index) {
+    final isin = products[index]['isin'];
+    final price =
+        translations['product']['${isin.toLowerCase()}Price'] ?? "price";
+    final currency =
+        translations['product']['${isin.toLowerCase()}Currency'] ?? "currency";
+    return ListTile(
+      leading: const Icon(Icons.assessment_outlined, color: DARK_GREEN),
+      title: Text(
+        translations['product']['${isin.toLowerCase()}Name'] ?? isin,
+        style: const TextStyle(color: DARK_GREEN, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(
+        price,
+        style: const TextStyle(color: DARK_GREEN),
+      ),
+      trailing: const Icon(Icons.shopping_cart_outlined, color: DARK_GREEN),
+      onTap: () async {
+        Map<String, dynamic> order = await _onProductBuy(isin, price, currency);
+        print(order);
+      },
+      onLongPress: () async {
+        // await deleteOrder(isin);
+        print('pressed ${isin.toLowerCase()}');
+      },
+    );
+  }
+
+  Future<dynamic> _onProductBuy(String isin, String price, String currency) =>
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                  "How much ${translations['product']['${isin.toLowerCase()}Name']} stock do you want to buy at price $price?"),
+              content: TextField(
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                decoration:
+                    const InputDecoration(hintText: "Enter number of assets"),
+                controller: priceController,
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Submit'),
+                  onPressed: () async {
+                    Map<String, dynamic> order = {
+                      "isin": isin,
+                      "name": translations['product']
+                          ['${isin.toLowerCase()}Name'],
+                      "price": price,
+                      "currency": currency,
+                      "quantity": priceController.text
+                    };
+                    await insertOrder(order);
+                    priceController.clear();
+                    Navigator.of(context).pop(order);
+                  },
+                ),
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
 }
