@@ -130,6 +130,24 @@ class ProfileDataPageState extends State<ProfileDataPage> {
             ]));
   }
 
+  Widget _buildDatePicker() {
+    return ElevatedButton(
+      child: Text('Pick a date'),
+      onPressed:  () {
+        showDatePicker(
+          context: context,
+          initialDate: user['birthDate'] != null ? (user['birthDate'] as Timestamp).toDate() : DateTime.now().subtract(const Duration(days: 19 * 365)),
+          firstDate: DateTime(1900), 
+          lastDate: DateTime.now().subtract(const Duration(days: 18 * 365))
+          ).then((date) {
+            setState(() {
+              user['birthDate'] = Timestamp.fromDate(date!);
+            });
+          });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var future = getUser();
@@ -160,6 +178,7 @@ class ProfileDataPageState extends State<ProfileDataPage> {
                                     _buildLastName(),
                                     _buildGender(),
                                     _buildBirthDate(),
+                                    _buildDatePicker(),
                                     _buildAddress(),
                                     _buildPhoneNumber(),
                                     const SizedBox(height: 100),
