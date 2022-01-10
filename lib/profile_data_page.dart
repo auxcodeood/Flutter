@@ -141,7 +141,9 @@ class ProfileDataPageState extends State<ProfileDataPage> {
           lastDate: DateTime.now().subtract(const Duration(days: 18 * 365))
           ).then((date) {
             setState(() {
-              user['birthDate'] = Timestamp.fromDate(date!);
+              if(date != null) {
+                user['birthDate'] = Timestamp.fromDate(date);
+              }
             });
           });
       },
