@@ -89,6 +89,7 @@ class ProfileDataPageState extends State<ProfileDataPage> {
         onDateSaved: (DateTime val) {
           user['birthDate'] = Timestamp.fromDate(val);
         });
+        
   }
 
   Widget _buildAddress() {
@@ -134,6 +135,7 @@ class ProfileDataPageState extends State<ProfileDataPage> {
     var future = getUser();
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
             margin: const EdgeInsets.all(15),
             child: FutureBuilder(
@@ -146,32 +148,37 @@ class ProfileDataPageState extends State<ProfileDataPage> {
                     children = <Widget>[
                       Form(
                           key: _formKey,
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                _buildEmail(),
-                                _buildFirstName(),
-                                _buildLastName(),
-                                _buildGender(),
-                                _buildBirthDate(),
-                                _buildAddress(),
-                                _buildPhoneNumber(),
-                                const SizedBox(height: 100),
-                                ElevatedButton(
-                                  child: const Text(
-                                    'Save',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
-                                  ),
-                                  onPressed: () async {
-                                    if (!_formKey.currentState!.validate())
-                                      return;
-                                    _formKey.currentState!.save();
-                                    await updateByEmail(user['email'], user);
-                                    openDialog();
-                                  },
-                                )
-                              ]))
+                          child: Container(
+                              alignment: Alignment.center,
+                              child: SingleChildScrollView(
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                    _buildEmail(),
+                                    _buildFirstName(),
+                                    _buildLastName(),
+                                    _buildGender(),
+                                    _buildBirthDate(),
+                                    _buildAddress(),
+                                    _buildPhoneNumber(),
+                                    const SizedBox(height: 100),
+                                    ElevatedButton(
+                                      child: const Text(
+                                        'Save',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 16),
+                                      ),
+                                      onPressed: () async {
+                                        if (!_formKey.currentState!.validate())
+                                          return;
+                                        _formKey.currentState!.save();
+                                        await updateByEmail(
+                                            user['email'], user);
+                                        openDialog();
+                                      },
+                                    )
+                                  ]))))
                     ];
                   } else if (snapshot.hasError) {
                     children = <Widget>[
@@ -199,8 +206,8 @@ class ProfileDataPageState extends State<ProfileDataPage> {
                     ];
                   }
                   return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: ListView (
+                      //mainAxisAlignment: MainAxisAlignment.center,
                       children: children,
                     ),
                   );

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/main.dart';
+import 'package:uuid/uuid.dart';
 
 class Order {
   final String isin;
@@ -52,9 +53,7 @@ CollectionReference settings =
 
 Future<void> addUser(String email) {
   return users
-      .add({
-        'email': email,
-      })
+      .add({'email': email, "orders": FieldValue.arrayUnion([])})
       .then((value) => print("User Added"))
       .catchError((error) => print("Failed to add user: $error"));
 }
@@ -70,7 +69,6 @@ Future<dynamic> getUserByEmail(String email) async {
 
 Future<dynamic> getUser() async {
   final user = await users.get().then((snapshot) => snapshot.docs[0]);
-  //loggedUser = user.data();
   return user;
 }
 
@@ -100,16 +98,17 @@ Future<List<QueryDocumentSnapshot<Object?>>> getOrders() async {
 }
 
 Future<void> insertOrder(Map<String, dynamic> order) async {
-  await updateByEmail(loggedUser['email'],{"orders":FieldValue.arrayUnion([order])});
+  var id = (Uuid()).v1();
+  order['id'] = id;
+  await updateByEmail(loggedUser['email'], {
+    "orders": FieldValue.arrayUnion([order])
+  });
+  await SyncUser(loggedUser['email']);
 }
 
-Future<void> deleteOrder(String isin) async {
-  await orders.where("isin", isEqualTo: isin).get().then((value) {
-    for (var element in value.docs) {
-      orders.doc(element.id).delete().then((value) {
-        print("Success!");
-      });
-    }
+Future<void> removeOrder(dynamic order) async {
+  await updateByEmail(loggedUser['email'], {
+    "orders": FieldValue.arrayRemove([order])
   });
 }
 
