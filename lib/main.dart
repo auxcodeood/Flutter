@@ -5,6 +5,7 @@ import 'package:flutter_app/pages/dashboard.dart';
 import 'package:flutter_app/pages/home.dart';
 import 'package:flutter_app/pages/orders.dart';
 import 'package:flutter_app/pages/products.dart';
+import 'package:flutter_app/pages/portfolio.dart';
 import 'package:flutter_app/pages/questionnaire.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
             '/products': (context) => const ProductPage(),
             '/orders': (context) => const OrderPage(),
             '/dashboard': (context) => const Dashboard(),
+            '/portfolio': (context) => const Portfolio(),
             '/questionnaire': (context) => const Questionnaire(),
             '/biometrics': (context) => Biometrics(),
             '/photos': (context) => CameraExampleHome()

@@ -8,6 +8,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/data/firebase.dart';
 import 'package:local_auth/local_auth.dart';
 
 class Biometrics extends StatefulWidget {
@@ -31,7 +32,10 @@ class _BiometricsState extends State<Biometrics> {
               ? _SupportState.supported
               : _SupportState.unsupported),
           if (await _authenticateWithBiometrics())
-            Navigator.pushReplacementNamed(context, '/home')
+            {
+              SyncUser("mv@auxcode.com").then(
+                  (_) => {Navigator.pushReplacementNamed(context, '/home')})
+            }
         });
   }
 

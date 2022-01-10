@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/main.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
@@ -61,7 +62,7 @@ class _ProductPageState extends State<ProductPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         constraints: const BoxConstraints.expand(),
-        child: ListView (
+        child: ListView(
           children: [
             Container(
               margin: const EdgeInsets.only(top: 32),
@@ -158,12 +159,9 @@ class _ProductPageState extends State<ProductPage> {
       ),
       trailing: const Icon(Icons.shopping_cart_outlined, color: DARK_GREEN),
       onTap: () async {
-        Map<String, dynamic> order = await _onProductBuy(isin, price, currency);
+        Map<String, dynamic>? order =
+            await _onProductBuy(isin, price, currency);
         print(order);
-      },
-      onLongPress: () async {
-        // await deleteOrder(isin);
-        print('pressed ${isin.toLowerCase()}');
       },
     );
   }
@@ -195,7 +193,8 @@ class _ProductPageState extends State<ProductPage> {
                       "currency": currency,
                       "quantity": priceController.text
                     };
-                    await insertOrder(order);
+                    insertOrder(order);
+                    loggedUser['orders'].add(order);
                     priceController.clear();
                     Navigator.of(context).pop(order);
                   },

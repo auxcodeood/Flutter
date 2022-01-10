@@ -169,6 +169,8 @@ Future<void> SyncUser(String email) async {
   } on RangeError catch (e) {
     await addUser(email);
     user = await getUserByEmail(email);
+  } catch (e) {
+    print(e);
   } finally {
     loggedUser = user.data();
   }

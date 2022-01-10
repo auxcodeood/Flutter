@@ -58,7 +58,7 @@ class _OrderPageState extends State<OrderPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         constraints: const BoxConstraints.expand(),
-        child: ListView (
+        child: ListView(
           children: [
             Container(
               margin: const EdgeInsets.only(top: 32),
@@ -143,16 +143,13 @@ class _OrderPageState extends State<OrderPage> {
         '''
         quantity: ${order["quantity"]}
         price: ${order["price"]} ${order["currency"]}
-        total: ${double.parse(order["quantity"] == "" ? "0" :order["quantity"])*double.parse(order["price"])} ${order["currency"]}
+        total: ${double.parse(order["quantity"] == "" ? "0" : order["quantity"]) * double.parse(order["price"])} ${order["currency"]}
        ''',
         style: const TextStyle(color: DARK_GREEN),
       ),
       onTap: () async {
         _onProductDelete(order);
         print("delete order");
-      },
-      onLongPress: () async {
-        
       },
     );
   }
@@ -163,12 +160,17 @@ class _OrderPageState extends State<OrderPage> {
       builder: (context) {
         return AlertDialog(
           title: const Text("Warning!"),
-          content: Text("You'll delete your order of ${order['name']} stock with quantity ${order["quantity"]}"),
+          content: Text(
+              "You'll delete your order of ${order['name']} stock with quantity ${order["quantity"]}"),
           actions: <Widget>[
             TextButton(
               child: const Text('Yes'),
               onPressed: () async {
-                await removeOrder(order);
+                removeOrder(order);
+                setState(() {
+                  orders!
+                      .removeWhere((element) => element['id'] == order['id']);
+                });
                 Navigator.of(context).pop(order);
               },
             ),
