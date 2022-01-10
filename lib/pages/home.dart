@@ -4,6 +4,7 @@ import 'package:flutter_app/colors.dart';
 import 'package:flutter_app/pages/dashboard.dart';
 import 'package:flutter_app/pages/orders.dart';
 import 'package:flutter_app/pages/products.dart';
+import 'package:flutter_app/pages/portfolio.dart';
 import 'package:flutter_app/profile_data_page.dart';
 
 import '../login_page.dart';
@@ -30,7 +31,8 @@ class _HomeWidgetState extends State<HomePage> {
     const Dashboard(),
     const ProductPage(),
     const OrderPage(),
-    const ProfileDataPage()
+    const ProfileDataPage(),
+    const Portfolio()
   ];
 
   @override
@@ -86,13 +88,17 @@ class _HomeWidgetState extends State<HomePage> {
             icon: Icon(Icons.business),
             label: 'Products',
           ),
-           BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart_outlined),
             label: 'Orders',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.format_list_bulleted),
+            label: 'Portfolio',
           )
         ],
         currentIndex: _selectedIndex,
