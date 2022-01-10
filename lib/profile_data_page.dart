@@ -192,7 +192,7 @@ class ProfileDataPageState extends State<ProfileDataPage> {
                                         if (!_formKey.currentState!.validate())
                                           return;
                                         _formKey.currentState!.save();
-                                        await updateByEmail(
+                                        updateByEmail(
                                             user['email'], user);
                                         openDialog();
                                       },
