@@ -16,8 +16,9 @@ Future<void> initGraphQlClient() async {
       link: link,
       // The default store is the InMemoryStore, which does NOT persist to disk
       cache: GraphQLCache(store: HiveStore()),
-      defaultPolicies:
-          DefaultPolicies(query: Policies(fetch: FetchPolicy.cacheFirst ,error: ErrorPolicy.all)));
+      defaultPolicies: DefaultPolicies(
+          query: Policies(
+              fetch: FetchPolicy.cacheAndNetwork, error: ErrorPolicy.all)));
 }
 
 Future<QueryResult> buttonsQuery(String locale) async {
@@ -57,9 +58,46 @@ Future<QueryResult> productsQuery(String locale) async {
           }
         }
 }
+
+
 """;
 
-   var results = await client!.query(QueryOptions(document: gql(allProducts)));
+  var results = await client!.query(QueryOptions(document: gql(allProducts)));
   //print(results.data!["product"]);
+  return results;
+}
+
+Future<QueryResult> depotQuery(String locale) async {
+  String allData = """
+      query querryName {
+        portfolio(locale: $locale) {
+          title
+          strategyName
+          strategyValue
+          totalValueName
+          totalValueValue
+          openedName
+          openedValue
+          currencyName
+          currencyValue
+          button
+          reads {
+            url
+          }
+          writes {
+            url
+          }
+        }
+        home(locale: $locale) {
+          myImage {
+            url
+          }
+        }
+}
+
+
+""";
+
+  var results = await client!.query(QueryOptions(document: gql(allData)));
   return results;
 }
